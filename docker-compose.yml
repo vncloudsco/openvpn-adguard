@@ -1,0 +1,54 @@
+version: "3.5"
+
+services:
+
+    openvpn:
+        container_name: openvpn
+        build: ./openvpn-docker
+        ports:
+            - 1194:1194/udp
+        networks:
+            vpn-net:
+                ipv4_address: 172.10.0.2
+        environment:
+            REQ_COUNTRY: US
+            REQ_PROVINCE: California
+            REQ_CITY: San Francisco
+            REQ_ORG: Copyleft Certificate Co
+            REQ_OU: My Organizational Unit
+            REQ_CN: MyOpenVPN
+        volumes:
+            - ./openvpn/pki:/etc/openvpn/pki
+            - ./openvpn/clients:/etc/openvpn/clients
+            - ./openvpn/config:/etc/openvpn/config
+        cap_add:
+            - NET_ADMIN
+        restart: unless-stopped
+
+    adguard:
+        container_name: adguard
+        image: adguard/adguardhome:latest
+        depends_on:
+            - "openvpn"
+        networks:
+            vpn-net:
+                ipv4_address: 172.10.0.3
+        volumes:
+            - ./workdir:/opt/adguardhome/work
+            - ./confdir:/opt/adguardhome/conf
+        ports:
+          - 784:784/udp
+          - 853:853/tcp
+          - 9090:3000/tcp
+          - 80:80/tcp
+          - 443:443/tcp
+        restart: unless-stopped
+
+networks:
+    vpn-net:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                -   subnet: 172.10.0.0/16
+
