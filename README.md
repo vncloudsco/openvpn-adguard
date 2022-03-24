@@ -34,6 +34,9 @@ sudo docker-compose up -d
 
 After this is done you'll find two new folders inside of this repository - the `/openvpn` folder will contain all of your certificates as well as an easy-rsa configuration file.
 
+After install done you need to configure AdGuardHome via ``` http://ip_your_public:3000 ``` you need to create yourself an admin account for manager AdGuardHome
+
+
 > Until [this issue](https://github.com/moby/moby/issues/32582) has been resolved I'll be using mounted host directories for the sake of simplicity.
 
 > If you're using a VPS make sure to open 1194/udp!
